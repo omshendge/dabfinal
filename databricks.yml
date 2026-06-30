@@ -1,0 +1,24 @@
+# databricks.yml
+bundle:
+  name: etl_pipeline_lab
+
+workspace:
+  host: https://adb-7405604756786114.14.azuredatabricks.net/
+
+resources:
+  jobs:
+    daily_etl_job:
+      name: "[${bundle.target}] Daily ETL Pipeline"
+      tasks:
+        - task_key: extract_and_transform
+          notebook_task:
+            notebook_path: ./src/etl_notebook.py
+
+targets:
+  dev:
+    default: true
+    workspace:
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+  prod:
+    workspace:
+      root_path: /Shared/.bundle/${bundle.name}/${bundle.target}

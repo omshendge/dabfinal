@@ -1,0 +1,32 @@
+name: Deploy and Run Databricks Bundle
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy_and_run:
+    name: Deploy to Prod and Execute
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.HOST_NAME }}
+      DATABRICKS_TOKEN: ${{ secrets.PAT }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate Bundle
+        run: databricks bundle validate -t prod
+
+      - name: Deploy Bundle to Prod
+        run: databricks bundle deploy -t prod
+
+      - name: Run ETL Pipeline in Prod
+        run: databricks bundle run daily_etl_job -t prod
